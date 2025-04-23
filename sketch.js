@@ -1,6 +1,13 @@
 let eatSound, gameOverSound, bgMusic;
+let snakeHeadImg, snakeBodyImg, foodImages = [];
 
 function preload() {
+    snakeHeadImg = loadImage("assets/snake_head.png");
+    snakeBodyImg = loadImage("assets/snake_body.png");
+    for (let i = 1; i <= 6; i++) {
+        foodImages.push(loadImage(`assets/food${i}.png`));
+    }
+
     eatSound = loadSound("assets/eat.mp3");
     gameOverSound = loadSound("assets/gameover.mp3");
     bgMusic = loadSound("assets/background.mp3");
@@ -12,7 +19,6 @@ function setup() {
     userStartAudio();
     game = new Game();
     frameRate(60);
-
     bgMusic.setVolume(0.3);
     bgMusic.loop();
 }
@@ -68,9 +74,10 @@ class Food {
             x = Math.floor(random(1, 39)) * 10;
             y = Math.floor(random(1, 39)) * 10;
         } while (x < 10 || y < 10 || x >= width - 20 || y >= height - 20);
-        
+
         this.position = { x, y };
         this.size = random() > 0.5 ? 15 : 10;
+        this.image = random(foodImages);
     }
 }
 
@@ -135,13 +142,18 @@ class Game {
             rect(width - 10, i, 10, 20);
         }
 
-        fill("green");
-        this.snake.position.forEach(part => {
-            rect(part.x, part.y, 10, 10);
-        });
+        // Gambar ular
+        for (let i = 0; i < this.snake.position.length; i++) {
+            let part = this.snake.position[i];
+            if (i === 0) {
+                image(snakeHeadImg, part.x, part.y, 10, 10);
+            } else {
+                image(snakeBodyImg, part.x, part.y, 10, 10);
+            }
+        }
 
-        fill(this.food.size === 15 ? "blue" : "red");
-        rect(this.food.position.x, this.food.position.y, this.food.size, this.food.size);
+        // Gambar makanan
+        image(this.food.image, this.food.position.x, this.food.position.y, this.food.size, this.food.size);
     }
 }
 
